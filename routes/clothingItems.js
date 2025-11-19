@@ -18,9 +18,9 @@ router.get("/", getItems);
 router.delete("/:itemId", deleteItem);
 
 // LIKE
-router.put("/:itemId/like", likeItem);
+router.put("/:itemId/likes", likeItem);
 
 // UNLIKE
-router.delete("/:itemId/unlike", unlikeItem);
+router.delete("/:itemId/likes", unlikeItem);
 
 module.exports = router;
