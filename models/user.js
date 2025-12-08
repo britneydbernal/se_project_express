@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -8,16 +9,32 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 30,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: { validator: validator.isEmail, message: "Enter a valid email" },
+  },
+  password: { type: String, required: true, select: false },
   avatar: {
     type: String,
     required: [true, "The avatar field is required."],
-    validate: {
-      validator(value) {
-        return validator.isURL(value);
-      },
-      message: "You must enter a valid URL",
-    },
+    validate: { validator: validator.isURL, message: "Enter a valid URL" },
   },
 });
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.statics.findUserByCredentials = async function (email, password) {
+  const user = await this.findOne({ email }).select("+password");
+  if (!user) throw new Error("Incorrect email or password");
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new Error("Incorrect email or password");
+  return user;
+};
 
 module.exports = mongoose.model("user", userSchema);

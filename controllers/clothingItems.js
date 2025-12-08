@@ -1,6 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST,
+  FORBIDDEN,
   NOT_FOUND,
   SERVER_ERROR,
   MESSAGES,
@@ -20,7 +21,8 @@ const createItem = (req, res) => {
     });
 };
 
-const getItems = (req, res) => ClothingItem.find({})
+const getItems = (req, res) =>
+  ClothingItem.find({})
     .then((items) => res.status(200).send({ data: items }))
     .catch(() => {
       res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
@@ -29,15 +31,23 @@ const getItems = (req, res) => ClothingItem.find({})
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  return ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail(() => {
       const error = new Error(MESSAGES.NOT_FOUND);
       error.statusCode = NOT_FOUND;
       throw error;
     })
-    .then((deletedItem) =>
-      res.status(200).send({ message: "Item deleted", data: deletedItem })
-    )
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        return res.status(FORBIDDEN).send({ message: MESSAGES.FORBIDDEN });
+      }
+
+      return item
+        .deleteOne()
+        .then(() =>
+          res.status(200).send({ message: "Item deleted", data: item })
+        );
+    })
     .catch((err) => {
       if (err.statusCode === NOT_FOUND) {
         return res.status(NOT_FOUND).send({ message: MESSAGES.NOT_FOUND });
