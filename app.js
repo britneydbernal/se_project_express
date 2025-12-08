@@ -23,7 +23,7 @@ app.use(auth);
 app.use(mainRouter);
 app.use("/items", clothingItemsRouter);
 
-app.use((err, req, res, _next) => {
+app.use((err, req, res) => {
   const { statusCode = SERVER_ERROR, message } = err;
   res.status(statusCode).send({
     message: statusCode === SERVER_ERROR ? MESSAGES.SERVER_ERROR : message,
@@ -33,7 +33,5 @@ app.use((err, req, res, _next) => {
 module.exports = app;
 
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
-  });
+  app.listen(PORT, () => {});
 }
