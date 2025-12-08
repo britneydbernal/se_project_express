@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const mainRouter = require("./routes/index");
-const itemsRouter = require("./routes/items");
+const clothingItemsRouter = require("./routes/clothingItems");
 const auth = require("./middlewares/auth");
 
 const app = express();
@@ -20,10 +20,10 @@ const { SERVER_ERROR, MESSAGES } = require("./utils/errors");
 
 app.post("/signin", login);
 app.post("/signup", createUser);
-app.use("/items", itemsRouter);
 
 app.use(auth);
 app.use(mainRouter);
+app.use("/items", clothingItemsRouter);
 
 app.use((err, req, res, _next) => {
   const { statusCode = SERVER_ERROR, message } = err;
