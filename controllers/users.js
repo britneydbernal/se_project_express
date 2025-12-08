@@ -19,30 +19,31 @@ const createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
   }
 
-  return bcrypt
-    .hash(password, 10)
-    .then((hash) =>
-      User.create({
-        name,
-        avatar,
-        email,
-        password: hash,
-      })
-    )
+  User.create({
+    name,
+    avatar,
+    email,
+    password,
+  })
+
     .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
       res.status(201).send({
-        _id: user._id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar,
+        data: {
+          _id: user._id,
+          email: user.email,
+          name: user.name,
+          avatar: user.avatar,
+          token,
+        },
       });
     })
     .catch((err) => {
       if (err.code === 11000) {
         return res.status(CONFLICT).send({ message: MESSAGES.CONFLICT });
-      }
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
       }
       return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
     });

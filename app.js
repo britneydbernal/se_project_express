@@ -19,9 +19,10 @@ const { SERVER_ERROR, MESSAGES } = require("./utils/errors");
 
 app.post("/signin", login);
 app.post("/signup", createUser);
+app.get("/items", mainRouter);
 
 app.use(auth);
-app.use("/", mainRouter);
+app.use(mainRouter);
 
 app.use((err, req, res, next) => {
   const { statusCode = SERVER_ERROR, message } = err;
