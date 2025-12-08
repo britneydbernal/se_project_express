@@ -8,9 +8,7 @@ const auth = require("./middlewares/auth");
 const app = express();
 const { PORT = 3001 } = process.env;
 
-mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db").catch(() => {
-  console.error("Error connecting to the database");
-});
+mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db").catch(() => {});
 
 app.use(cors());
 app.use(express.json());

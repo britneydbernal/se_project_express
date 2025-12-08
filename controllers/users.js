@@ -18,7 +18,7 @@ const createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
   }
 
-  User.create({
+  return User.create({
     name,
     avatar,
     email,
@@ -30,7 +30,7 @@ const createUser = (req, res) => {
         expiresIn: "7d",
       });
 
-      res.status(201).send({
+      return res.status(201).send({
         data: {
           _id: user._id,
           email: user.email,
@@ -60,15 +60,15 @@ const login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.send({ token });
+      return res.send({ token });
     })
     .catch(() => {
-      res.status(UNAUTHORIZED).send({ message: MESSAGES.UNAUTHORIZED });
+      return res.status(UNAUTHORIZED).send({ message: MESSAGES.UNAUTHORIZED });
     });
 };
 
 const getCurrentUser = (req, res) => {
-  User.findById(req.user._id)
+  return User.findById(req.user._id)
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
@@ -81,7 +81,7 @@ const getCurrentUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, avatar } = req.body;
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     req.user._id,
     { name, avatar },
     { new: true, runValidators: true }
