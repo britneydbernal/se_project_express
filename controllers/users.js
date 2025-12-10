@@ -11,41 +11,48 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
     return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
   }
 
-  return User.create({
-    name,
-    avatar,
-    email,
-    password,
-  })
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(CONFLICT).send({ message: MESSAGES.CONFLICT });
+    }
 
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "7d",
-      });
-
-      return res.status(201).send({
-        data: {
-          _id: user._id,
-          email: user.email,
-          name: user.name,
-          avatar: user.avatar,
-          token,
-        },
-      });
-    })
-    .catch((err) => {
-      if (err.code === 11000) {
-        return res.status(CONFLICT).send({ message: MESSAGES.CONFLICT });
-      }
-      return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
+    const user = await User.create({
+      name,
+      avatar,
+      email,
+      password,
     });
+
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return res.status(201).send({
+      data: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+        token,
+      },
+    });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(CONFLICT).send({ message: MESSAGES.CONFLICT });
+    }
+    if (err.name === "ValidationError") {
+      return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
+    }
+    return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
+  }
 };
 
 const login = (req, res) => {
