@@ -69,13 +69,10 @@ const login = (req, res) => {
       });
       return res.send({ token });
     })
-    .catch(() => {
-      return res.status(UNAUTHORIZED).send({ message: MESSAGES.UNAUTHORIZED });
-    });
+    .catch(() => res.status(UNAUTHORIZED).send({ message: MESSAGES.UNAUTHORIZED }));
 };
 
-const getCurrentUser = (req, res) => {
-  return User.findById(req.user._id)
+const getCurrentUser = (req, res) => User.findById(req.user._id)
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
@@ -84,7 +81,6 @@ const getCurrentUser = (req, res) => {
       }
       return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
     });
-};
 
 const updateUser = (req, res) => {
   const { name, avatar } = req.body;
