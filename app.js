@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const mainRouter = require("./routes/index");
-const auth = require("./middlewares/auth");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -20,9 +19,7 @@ app.post("/signin", login);
 app.post("/signup", createUser);
 app.get("/items", getItems);
 
-app.use(auth);
 app.use("/", mainRouter);
-// app.use("/items", clothingItemsRouter);
 
 app.use((err, req, res) => {
   const { statusCode = SERVER_ERROR, message } = err;
