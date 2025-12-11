@@ -24,7 +24,7 @@ app.use(auth);
 app.use("/", mainRouter);
 // app.use("/items", clothingItemsRouter);
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = SERVER_ERROR, message } = err;
   res.status(statusCode).send({
     message: statusCode === SERVER_ERROR ? MESSAGES.SERVER_ERROR : message,
