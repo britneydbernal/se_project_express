@@ -39,7 +39,9 @@ const deleteItem = (req, res) => {
     })
     .then((item) => {
       if (item.owner.toString() !== req.user._id.toString()) {
-        return res.status(FORBIDDEN).send({ message: MESSAGES.FORBIDDEN });
+        const error = new Error(MESSAGES.FORBIDDEN);
+        error.statusCode = FORBIDDEN;
+        throw error;
       }
 
       return item
@@ -49,6 +51,9 @@ const deleteItem = (req, res) => {
         );
     })
     .catch((err) => {
+      if (err.statusCode === FORBIDDEN) {
+        return res.status(FORBIDDEN).send({ message: MESSAGES.FORBIDDEN });
+      }
       if (err.statusCode === NOT_FOUND) {
         return res.status(NOT_FOUND).send({ message: MESSAGES.NOT_FOUND });
       }
