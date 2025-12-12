@@ -39,21 +39,18 @@ const deleteItem = (req, res) => {
     })
     .then((item) => {
       if (item.owner.toString() !== req.user._id.toString()) {
-        const error = new Error(MESSAGES.FORBIDDEN);
-        error.statusCode = FORBIDDEN;
-        throw error;
+        res.status(FORBIDDEN).send({ message: MESSAGES.FORBIDDEN });
+      } else {
+        ClothingItem.deleteOne(item)
+          .then(() =>
+            res.status(200).send({ message: "Item deleted", data: item })
+          )
+          .catch(() => {
+            res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
+          });
       }
-
-      return item
-        .deleteOne()
-        .then(() =>
-          res.status(200).send({ message: "Item deleted", data: item })
-        );
     })
     .catch((err) => {
-      if (err.statusCode === FORBIDDEN) {
-        return res.status(FORBIDDEN).send({ message: MESSAGES.FORBIDDEN });
-      }
       if (err.statusCode === NOT_FOUND) {
         return res.status(NOT_FOUND).send({ message: MESSAGES.NOT_FOUND });
       }
