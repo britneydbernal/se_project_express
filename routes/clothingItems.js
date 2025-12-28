@@ -2,17 +2,18 @@ const router = require("express").Router();
 const auth = require("../middlewares/auth");
 
 const {
+  getItems,
   createItem,
   deleteItem,
   likeItem,
   unlikeItem,
 } = require("../controllers/clothingItems");
 
+// READ
+router.get("/", auth, getItems);
+
 // CREATE
 router.post("/", auth, createItem);
-
-// READ
-//router.get("/", auth, getItems);
 
 // DELETE
 router.delete("/:itemId", auth, deleteItem);

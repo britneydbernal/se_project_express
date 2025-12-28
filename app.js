@@ -31,5 +31,7 @@ app.use((err, req, res) => {
 module.exports = app;
 
 if (require.main === module) {
-  app.listen(PORT, () => {});
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 }
