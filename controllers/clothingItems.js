@@ -1,13 +1,9 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  BAD_REQUEST,
-  FORBIDDEN,
-  NOT_FOUND,
-  SERVER_ERROR,
-  MESSAGES,
-} = require("../utils/errors");
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const ForbiddenError = require("../errors/ForbiddenError");
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
@@ -15,53 +11,39 @@ const createItem = (req, res) => {
     .then((item) => res.status(201).send({ data: item }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
+        next(new BadRequestError("Invalid data provided"));
+      } else {
+        next(err);
       }
-      return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
     });
 };
 
-const getItems = (req, res) =>
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send({ data: items }))
-    .catch(() => {
-      res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
-    });
+    .catch(next);
+};
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
     .orFail(() => {
-      const error = new Error(MESSAGES.NOT_FOUND);
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => {
       if (item.owner.toString() !== req.user._id.toString()) {
-        res.status(FORBIDDEN).send({ message: MESSAGES.FORBIDDEN });
-      } else {
-        ClothingItem.deleteOne(item)
-          .then(() =>
-            res.status(200).send({ message: "Item deleted", data: item })
-          )
-          .catch(() => {
-            res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
-          });
+        throw new ForbiddenError(
+          "You do not have permission to delete this item"
+        );
       }
+      return ClothingItem.deleteOne({ _id: itemId });
     })
-    .catch((err) => {
-      if (err.statusCode === NOT_FOUND) {
-        return res.status(NOT_FOUND).send({ message: MESSAGES.NOT_FOUND });
-      }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
-      }
-      return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
-    });
+    .then(() => res.status(200).send({ message: "Item deleted successfully" }))
+    .catch(next);
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   return ClothingItem.findByIdAndUpdate(
@@ -70,23 +52,13 @@ const likeItem = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error(MESSAGES.NOT_FOUND);
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => res.status(200).send({ data: item }))
-    .catch((err) => {
-      if (err.statusCode === NOT_FOUND) {
-        return res.status(NOT_FOUND).send({ message: MESSAGES.NOT_FOUND });
-      }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
-      }
-      return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
-    });
+    .catch(next);
 };
 
-const unlikeItem = (req, res) => {
+const unlikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   return ClothingItem.findByIdAndUpdate(
@@ -95,20 +67,10 @@ const unlikeItem = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error(MESSAGES.NOT_FOUND);
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => res.status(200).send({ data: item }))
-    .catch((err) => {
-      if (err.statusCode === NOT_FOUND) {
-        return res.status(NOT_FOUND).send({ message: MESSAGES.NOT_FOUND });
-      }
-      if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: MESSAGES.BAD_REQUEST });
-      }
-      return res.status(SERVER_ERROR).send({ message: MESSAGES.SERVER_ERROR });
-    });
+    .catch(next);
 };
 
 module.exports = {
