@@ -13,7 +13,7 @@ const {
 } = require("../middlewares/validation");
 
 // READ
-router.get("/", auth, getItems);
+router.get("/", getItems);
 
 // CREATE
 router.post("/", auth, validateCardBody, createItem);

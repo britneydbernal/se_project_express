@@ -30,12 +30,12 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 
 #### Links
 
-- Domain : https://api.britneywtwr.jumpingcrap.com
-- Frontend Repository : https://github.com/britneydbernal/se_project_react
+- Domain : [api.britneywtwr.jumpingcrab.com](https://api.britneywtwr.jumpingcrap.com)
+- Frontend Repository : [se_project_react](https://github.com/britneydbernal/se_project_react)
 
 ##### Project Pitch Videos
 
 Check out these videos where I describe my project and some challenges I faced while building it:
 
-- [1st Pitch Video: Overview] : (https://drive.google.com/file/d/1geuoXexkE0S1-al-HDnJ9rYls97_jIwz/view?usp=drive_link)
+- [1st Pitch Video: Overview](https://drive.google.com/file/d/1geuoXexkE0S1-al-HDnJ9rYls97_jIwz/view?usp=drive_link)
 - [2nd Pitch Video: Backend] :
