@@ -20,17 +20,11 @@ app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
-//app.use((err, req, res) => {
-//const { statusCode = SERVER_ERROR, message } = err;
-//res.status(statusCode).send({
-//message: statusCode === SERVER_ERROR ? MESSAGES.SERVER_ERROR : message,
-//});
-//});
-
 module.exports = app;
 
 if (require.main === module) {
   app.listen(PORT, () => {
+    // eslint-disable-next-line no-console
     console.log(`Server running on port ${PORT}`);
   });
 }

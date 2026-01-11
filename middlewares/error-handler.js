@@ -1,4 +1,5 @@
 const errorHandler = (err, req, res, next) => {
+  // eslint-disable-next-line no-console
   console.error(err);
 
   const statusCode = err.statusCode || 500;
