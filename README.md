@@ -30,7 +30,7 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 
 #### Links
 
-- Domain : [api.britneywtwr.jumpingcrab.com](https://api.britneywtwr.jumpingcrap.com)
+- Domain : [api.britneywtwr.jumpingcrab.com](https://api.britneywtwr.jumpingcrab.com)
 - Frontend Repository : [se_project_react](https://github.com/britneydbernal/se_project_react)
 
 ##### Project Pitch Videos

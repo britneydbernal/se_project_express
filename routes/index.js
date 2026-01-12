@@ -8,6 +8,12 @@ const {
 } = require("../middlewares/validation");
 const NotFoundError = require("../errors/NotFoundError");
 
+router.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("The server will crash now");
+  }, 0);
+});
+
 router.post("/signin", validateAuthentication, login);
 router.post("/signup", validateUserBody, createUser);
 
